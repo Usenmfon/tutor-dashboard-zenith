@@ -111,7 +111,9 @@ export const DialogClose: React.FC<{
   // If asChild is true, we need to clone the child to add the onClick handler
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children, {
-      className: cn(children.props.className, className),
+      // Don't pass className to the cloned element if not present in its props type
+      // This fixes the TS2769 error
+      ...(className ? { className: cn(children.props.className, className) } : {})
     });
   }
   
