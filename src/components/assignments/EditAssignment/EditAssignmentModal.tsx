@@ -1,65 +1,37 @@
-
-import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import AssignmentForm from "../AssignmentForm";
-import { Assignment, Module } from "../types";
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface EditAssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (assignment: Assignment) => void;
-  modules: Module[];
-  assignment: Assignment;
+  title: string;
 }
 
 const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
   isOpen,
   onClose,
-  onSave,
-  modules,
-  assignment,
+  title,
 }) => {
-  const handleSave = (updatedAssignment: Assignment) => {
-    onSave(updatedAssignment);
-    onClose();
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Assignment</DialogTitle>
-          <DialogDescription>
-            Update assignment details below.
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        
-        <AssignmentForm
-          onSave={handleSave}
-          onCancel={onClose}
-          modules={modules}
-          initialValues={assignment}
-        />
-        
-        <DialogFooter className="mt-6">
+        <div className="py-4">
+          {/* Assignment form would go here */}
+          <p>Assignment edit form content</p>
+        </div>
+        <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button 
-            onClick={() => {
-              // Trigger form submission via custom event
-              document.dispatchEvent(new Event('assignment-submit'));
-            }}
-          >
-            Update Assignment
+          <Button onClick={() => {
+            // Save assignment logic would go here
+            onClose();
+          }}>
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>
