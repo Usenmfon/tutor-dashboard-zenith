@@ -89,22 +89,37 @@ export const DialogDescription: React.FC<{
   );
 };
 
-// Adding DialogTrigger
+// Adding DialogTrigger and enhancing DialogClose functionality
 export const DialogTrigger: React.FC<{
   children: React.ReactNode;
   className?: string;
   asChild?: boolean;
-}> = ({ children }) => {
-  return children;
+}> = ({ children, className }) => {
+  return (
+    <div className={className}>
+      {children}
+    </div>
+  );
 };
 
-// Adding DialogClose
+// Enhanced DialogClose 
 export const DialogClose: React.FC<{
   children: React.ReactNode;
   className?: string;
   asChild?: boolean;
-}> = ({ children }) => {
-  return children;
+}> = ({ children, className, asChild }) => {
+  // If asChild is true, we need to clone the child to add the onClick handler
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      className: cn(children.props.className, className),
+    });
+  }
+  
+  return (
+    <div className={className}>
+      {children}
+    </div>
+  );
 };
 
 export const DialogOverlay = DialogContent;

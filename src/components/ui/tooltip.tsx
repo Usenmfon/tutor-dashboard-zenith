@@ -19,9 +19,9 @@ export const TooltipContent: React.FC<{
   hidden?: boolean;
   className?: string;
   id?: string;
-}> = ({children, side, align, hidden, className}) => {
+}> = ({children, side, align, hidden, className, id}) => {
   if (hidden) return null;
-  return <div className={cn("px-3 py-1.5 text-sm bg-popover text-popover-foreground rounded-md shadow-md", className)}>{children}</div>;
+  return <div id={id} className={cn("px-3 py-1.5 text-sm bg-popover text-popover-foreground rounded-md shadow-md", className)}>{children}</div>;
 };
 
 export const TooltipProvider: React.FC<{

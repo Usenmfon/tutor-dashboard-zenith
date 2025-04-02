@@ -110,6 +110,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
       <AccordionTrigger 
         isOpen={isOpen} 
         onClick={handleClick}
+        className=""
       >
         {trigger}
       </AccordionTrigger>
@@ -118,7 +119,8 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
   )
 }
 
-const AccordionTrigger: React.FC<{
+// Export additional components for compatibility
+export const AccordionTrigger: React.FC<{
   children: React.ReactNode;
   isOpen: boolean;
   onClick: () => void;
@@ -139,7 +141,7 @@ const AccordionTrigger: React.FC<{
   );
 };
 
-const AccordionContent: React.FC<{
+export const AccordionContent: React.FC<{
   children: React.ReactNode;
   isOpen: boolean;
   className?: string;
@@ -153,4 +155,4 @@ const AccordionContent: React.FC<{
   ) : null;
 };
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+export { Accordion, AccordionItem }

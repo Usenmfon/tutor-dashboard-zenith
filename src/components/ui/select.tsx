@@ -10,12 +10,36 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 }
 
 // Custom SelectContent, SelectItem, SelectTrigger, and SelectValue components for compatibility
-export const SelectContent = ({children}: {children: React.ReactNode}) => children;
-export const SelectItem = ({value, children, id}: {value: string, children: React.ReactNode, id?: string}) => (
-  <option value={value} id={id}>{children}</option>
+export const SelectContent = ({children, className}: {children: React.ReactNode, className?: string}) => children;
+
+export const SelectItem = ({value, children, id, className}: {
+  value: string, 
+  children: React.ReactNode, 
+  id?: string,
+  className?: string
+}) => (
+  <option value={value} id={id} className={className}>{children}</option>
 );
-export const SelectTrigger = ({children, className}: {children: React.ReactNode, className?: string}) => children;
-export const SelectValue = ({placeholder, id}: {placeholder?: string, id?: string}) => placeholder || null;
+
+export const SelectTrigger = ({
+  children, 
+  className, 
+  id
+}: {
+  children: React.ReactNode, 
+  className?: string,
+  id?: string
+}) => children;
+
+export const SelectValue = ({
+  placeholder, 
+  id, 
+  className
+}: {
+  placeholder?: string, 
+  id?: string,
+  className?: string
+}) => placeholder || null;
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, options = [], onValueChange, onChange, value, children, ...props }, ref) => {
