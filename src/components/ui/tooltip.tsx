@@ -7,23 +7,44 @@ export interface TooltipProps {
   children: React.ReactNode
   side?: "top" | "right" | "bottom" | "left"
   className?: string
+  delayDuration?: number
+  asChild?: boolean
 }
 
 // Add the missing components for compatibility
-export const TooltipContent = ({children}: {children: React.ReactNode}) => children;
-export const TooltipProvider = ({children}: {children: React.ReactNode}) => children;
-export const TooltipTrigger = ({children}: {children: React.ReactNode}) => children;
+export const TooltipContent: React.FC<{
+  children: React.ReactNode;
+  side?: string;
+  align?: string;
+  hidden?: boolean;
+}> = ({children, side, align, hidden}) => {
+  if (hidden) return null;
+  return <div className="px-3 py-1.5 text-sm bg-popover text-popover-foreground rounded-md shadow-md">{children}</div>;
+};
+
+export const TooltipProvider: React.FC<{
+  children: React.ReactNode;
+  delayDuration?: number;
+}> = ({children, delayDuration}) => children;
+
+export const TooltipTrigger: React.FC<{
+  children: React.ReactNode;
+  asChild?: boolean;
+}> = ({children}) => children;
 
 const Tooltip: React.FC<TooltipProps> = ({
   content,
   children,
   side = "top",
   className,
+  delayDuration = 300,
+  asChild = false,
 }) => {
   const [isVisible, setIsVisible] = React.useState(false)
   const [position, setPosition] = React.useState({ top: 0, left: 0 })
   const childRef = React.useRef<HTMLDivElement>(null)
   const tooltipRef = React.useRef<HTMLDivElement>(null)
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
   const calculatePosition = React.useCallback(() => {
     if (!childRef.current || !tooltipRef.current) return
@@ -58,6 +79,19 @@ const Tooltip: React.FC<TooltipProps> = ({
     setPosition({ top, left })
   }, [side])
 
+  const showTooltip = React.useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setIsVisible(true);
+      calculatePosition();
+    }, delayDuration);
+  }, [calculatePosition, delayDuration]);
+
+  const hideTooltip = React.useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsVisible(false);
+  }, []);
+
   React.useEffect(() => {
     if (isVisible) {
       calculatePosition()
@@ -68,18 +102,37 @@ const Tooltip: React.FC<TooltipProps> = ({
     }
   }, [isVisible, calculatePosition])
 
-  return (
-    <>
+  // When component unmounts, clear any remaining timeouts
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const childElement = asChild 
+    ? React.cloneElement(children as React.ReactElement, {
+        ref: childRef,
+        onMouseEnter: showTooltip,
+        onMouseLeave: hideTooltip,
+        onFocus: showTooltip,
+        onBlur: hideTooltip,
+      })
+    : (
       <div
         ref={childRef}
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-        onFocus={() => setIsVisible(true)}
-        onBlur={() => setIsVisible(false)}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+        onFocus={showTooltip}
+        onBlur={hideTooltip}
         className="inline-block"
       >
         {children}
       </div>
+    );
+
+  return (
+    <>
+      {childElement}
       {isVisible && (
         <div
           ref={tooltipRef}
@@ -98,7 +151,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export { Tooltip }
+export { Tooltip };

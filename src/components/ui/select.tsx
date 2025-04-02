@@ -5,7 +5,7 @@ import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  options: { value: string; label: string }[]
+  options?: { value: string; label: string }[]
   onValueChange?: (value: string) => void
 }
 
@@ -15,10 +15,31 @@ export const SelectItem = ({value, children}: {value: string, children: React.Re
   <option value={value}>{children}</option>
 );
 export const SelectTrigger = ({children, className}: {children: React.ReactNode, className?: string}) => children;
-export const SelectValue = ({placeholder}: {placeholder: string}) => placeholder;
+export const SelectValue = ({placeholder}: {placeholder?: string}) => placeholder || null;
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, options, onValueChange, onChange, value, ...props }, ref) => {
+  ({ className, options = [], onValueChange, onChange, value, children, ...props }, ref) => {
+    // Extract options from children if they exist and options prop is not provided
+    const extractedOptions = React.useMemo(() => {
+      if (options && options.length > 0) return options;
+      
+      const items: { value: string; label: string }[] = [];
+      
+      if (children) {
+        // Extract options from SelectItem children
+        React.Children.forEach(children, (child) => {
+          if (React.isValidElement(child) && child.type === SelectItem) {
+            items.push({
+              value: child.props.value,
+              label: child.props.children?.toString() || child.props.value
+            });
+          }
+        });
+      }
+      
+      return items;
+    }, [children, options]);
+
     // Handle both onChange and onValueChange
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       if (onChange) {
@@ -41,7 +62,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           onChange={handleChange}
           {...props}
         >
-          {options.map((option) => (
+          {children || extractedOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
