@@ -1,14 +1,18 @@
 
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
-interface TooltipProps {
+export interface TooltipProps {
   content: React.ReactNode
   children: React.ReactNode
   side?: "top" | "right" | "bottom" | "left"
   className?: string
 }
+
+// Add the missing components for compatibility
+export const TooltipContent = ({children}: {children: React.ReactNode}) => children;
+export const TooltipProvider = ({children}: {children: React.ReactNode}) => children;
+export const TooltipTrigger = ({children}: {children: React.ReactNode}) => children;
 
 const Tooltip: React.FC<TooltipProps> = ({
   content,

@@ -1,18 +1,34 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import AssignmentForm from '../AssignmentForm';
+import { Assignment, Module } from '../types';
 
 interface EditAssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title?: string;
+  onSave?: (assignment: Assignment) => void;
+  modules?: Module[];
+  assignment?: Assignment;
 }
 
 const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
   isOpen,
   onClose,
-  title,
+  title = "Edit Assignment",
+  onSave,
+  modules = [],
+  assignment
 }) => {
+  const handleSave = (assignment: Assignment) => {
+    if (onSave) {
+      onSave(assignment);
+    }
+    onClose();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -20,16 +36,22 @@ const EditAssignmentModal: React.FC<EditAssignmentModalProps> = ({
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          {/* Assignment form would go here */}
-          <p>Assignment edit form content</p>
+          {assignment && modules && (
+            <AssignmentForm
+              onSave={handleSave}
+              onCancel={onClose}
+              modules={modules}
+              initialValues={assignment}
+            />
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button onClick={() => {
-            // Save assignment logic would go here
-            onClose();
+            // Trigger the form submission via event
+            document.dispatchEvent(new Event('assignment-submit'));
           }}>
             Save
           </Button>

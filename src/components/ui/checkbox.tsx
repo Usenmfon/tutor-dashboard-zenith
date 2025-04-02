@@ -4,10 +4,12 @@ import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-export interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+export interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  onCheckedChange?: (checked: boolean) => void
+}
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, onCheckedChange, ...props }, ref) => {
     const [checked, setChecked] = React.useState(props.checked || false)
 
     React.useEffect(() => {
@@ -19,6 +21,9 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (props.onChange) {
         props.onChange(e)
+      }
+      if (onCheckedChange) {
+        onCheckedChange(e.target.checked)
       }
       if (props.checked === undefined) {
         // Only update internal state if it's an uncontrolled component

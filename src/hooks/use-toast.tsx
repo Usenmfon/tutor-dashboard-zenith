@@ -19,6 +19,7 @@ interface ToastContextType {
   toasts: ToasterToast[];
   addToast: (toast: Omit<Toast, 'id'>) => void;
   removeToast: (id: string) => void;
+  toast: (props: Omit<Toast, 'id'>) => void;
 }
 
 export const ToastContext = React.createContext<ToastContextType | undefined>(undefined);
@@ -72,6 +73,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const removeToast = React.useCallback((id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
+
+  // Direct toast method for component use
+  const toastMethod = React.useCallback((props: Omit<Toast, 'id'>) => {
+    addToast(props);
+  }, [addToast]);
   
   React.useEffect(() => {
     const handleAddToast = (e: Event) => {
@@ -87,7 +93,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [addToast]);
   
   return (
-    <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
+    <ToastContext.Provider value={{ toasts, addToast, removeToast, toast: toastMethod }}>
       {children}
     </ToastContext.Provider>
   );
