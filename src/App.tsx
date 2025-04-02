@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { UserProvider } from "@/contexts/UserContext";
+import { ToastProvider } from "@/hooks/use-toast";
 
 import Layout from "./components/layout/Layout";
 import StudentLayout from "./components/layout/StudentLayout";
@@ -55,163 +56,165 @@ function App() {
     <Router>
       <QueryClientProvider client={queryClient}>
         <UserProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            
-            <Route path="/dashboard" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><Dashboard /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/assignments" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><Assignments /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/assignments/:id" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><AssignmentDetails /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/classrooms" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><Classrooms /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/classroom/:id" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><ClassroomDetailPage /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/classroom-detail/:id" element={<ClassroomDetailRedirect />} />
-            <Route path="/classroom-feed/:id" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><ClassroomFeedPage /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/classroom-management/:id" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><ClassroomManagementPage /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/courses" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><Courses /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/live-classes" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><LiveClasses /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-progress" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin"]}>
-                <Layout><TutorStudentProgress /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
-                <Layout><ProfilePage /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/resources" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
-                <Layout><Resources /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/notifications" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
-                <Layout><Notifications /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/settings" element={
-              <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
-                <Layout><Settings /></Layout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/users" element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <Layout><AdminUsers /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/programs" element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <Layout><AdminPrograms /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/analytics" element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <Layout><AdminAnalytics /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/payments" element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <Layout><AdminPayments /></Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/system-settings" element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <Layout><AdminSystemSettings /></Layout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/student-dashboard" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentDashboard /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-courses" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentCourses /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-courses/video/:topicId" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><CourseVideo /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-classrooms" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentClassrooms /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-classroom/:id" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentClassroomEntryPage /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-classroom/:classroomId/topic/:topicId" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentTopicViewerPage /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-assignments" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentAssignments /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-live-classes" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentLiveClasses /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-progress" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><StudentProgress /></StudentLayout>
-              </ProtectedRoute>
-            } />
-            <Route path="/student-achievements" element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <StudentLayout><div>Student Achievements Coming Soon</div></StudentLayout>
-              </ProtectedRoute>
-            } />
-            
-            <Route path="*" element={<Layout><NotFound /></Layout>} />
-          </Routes>
+          <ToastProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              
+              <Route path="/dashboard" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><Dashboard /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/assignments" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><Assignments /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/assignments/:id" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><AssignmentDetails /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/classrooms" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><Classrooms /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/classroom/:id" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><ClassroomDetailPage /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/classroom-detail/:id" element={<ClassroomDetailRedirect />} />
+              <Route path="/classroom-feed/:id" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><ClassroomFeedPage /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/classroom-management/:id" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><ClassroomManagementPage /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/courses" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><Courses /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/live-classes" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><LiveClasses /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-progress" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin"]}>
+                  <Layout><TutorStudentProgress /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
+                  <Layout><ProfilePage /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/resources" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
+                  <Layout><Resources /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/notifications" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
+                  <Layout><Notifications /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute allowedRoles={["tutor", "admin", "student"]}>
+                  <Layout><Settings /></Layout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/users" element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <Layout><AdminUsers /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/programs" element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <Layout><AdminPrograms /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/analytics" element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <Layout><AdminAnalytics /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/payments" element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <Layout><AdminPayments /></Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/system-settings" element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <Layout><AdminSystemSettings /></Layout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/student-dashboard" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentDashboard /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-courses" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentCourses /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-courses/video/:topicId" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><CourseVideo /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-classrooms" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentClassrooms /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-classroom/:id" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentClassroomEntryPage /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-classroom/:classroomId/topic/:topicId" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentTopicViewerPage /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-assignments" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentAssignments /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-live-classes" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentLiveClasses /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-progress" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentProgress /></StudentLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/student-achievements" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><div>Student Achievements Coming Soon</div></StudentLayout>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="*" element={<Layout><NotFound /></Layout>} />
+            </Routes>
+          </ToastProvider>
         </UserProvider>
       </QueryClientProvider>
     </Router>
