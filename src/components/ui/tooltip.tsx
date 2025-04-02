@@ -17,20 +17,23 @@ export const TooltipContent: React.FC<{
   side?: string;
   align?: string;
   hidden?: boolean;
-}> = ({children, side, align, hidden}) => {
+  className?: string;
+  id?: string;
+}> = ({children, side, align, hidden, className}) => {
   if (hidden) return null;
-  return <div className="px-3 py-1.5 text-sm bg-popover text-popover-foreground rounded-md shadow-md">{children}</div>;
+  return <div className={cn("px-3 py-1.5 text-sm bg-popover text-popover-foreground rounded-md shadow-md", className)}>{children}</div>;
 };
 
 export const TooltipProvider: React.FC<{
   children: React.ReactNode;
   delayDuration?: number;
-}> = ({children, delayDuration}) => children;
+}> = ({children}) => children;
 
 export const TooltipTrigger: React.FC<{
   children: React.ReactNode;
   asChild?: boolean;
-}> = ({children}) => children;
+  className?: string;
+}> = ({children, className}) => <span className={className}>{children}</span>;
 
 const Tooltip: React.FC<TooltipProps> = ({
   content,

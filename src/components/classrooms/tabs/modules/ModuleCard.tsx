@@ -13,9 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { 
   Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
+  AccordionItem,
 } from "@/components/ui/accordion";
 import { BookOpen, Edit, Trash2, Plus, Check, Clock } from "lucide-react";
 import { Topic, Module } from "../modules/types";
@@ -47,8 +45,8 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
         <div className="flex items-start gap-4">
           <Checkbox 
             checked={module.isCompleted}
-            onCheckedChange={(checked) => {
-              onModuleCompletion(module.id, checked as boolean);
+            onChange={(e) => {
+              onModuleCompletion(module.id, e.target.checked);
             }}
             className="mt-1"
           />
@@ -90,30 +88,27 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
         </div>
         <Accordion type="single" collapsible className="w-full">
           {module.topics.map((topic) => (
-            <AccordionItem key={topic.id} value={topic.id}>
-              <AccordionTrigger className="text-base">
-                <div className="flex items-center gap-3">
-                  <Checkbox 
-                    checked={topic.isCompleted}
-                    onCheckedChange={(checked) => {
-                      onTopicCompletion(module.id, topic.id, checked as boolean);
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <span className={topic.isCompleted ? "text-muted-foreground line-through" : ""}>
-                    {topic.title}
-                  </span>
+            <AccordionItem key={topic.id} value={topic.id} trigger={
+              <div className="flex items-center gap-3">
+                <Checkbox 
+                  checked={topic.isCompleted}
+                  onChange={(e) => {
+                    onTopicCompletion(module.id, topic.id, e.target.checked);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <span className={topic.isCompleted ? "text-muted-foreground line-through" : ""}>
+                  {topic.title}
+                </span>
+              </div>
+            }>
+              <div className="space-y-2 pl-8">
+                <p>{topic.description}</p>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>Duration: {topic.duration}</span>
+                  <span>{topic.isCompleted ? "Completed" : "Not completed"}</span>
                 </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-2 pl-8">
-                  <p>{topic.description}</p>
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>Duration: {topic.duration}</span>
-                    <span>{topic.isCompleted ? "Completed" : "Not completed"}</span>
-                  </div>
-                </div>
-              </AccordionContent>
+              </div>
             </AccordionItem>
           ))}
         </Accordion>

@@ -118,17 +118,17 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
   )
 }
 
-// Added these components for compatibility
 const AccordionTrigger: React.FC<{
   children: React.ReactNode;
   isOpen: boolean;
   onClick: () => void;
-}> = ({ children, isOpen, onClick }) => {
+  className?: string;
+}> = ({ children, isOpen, onClick, className }) => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline w-full"
+      className={cn("flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline w-full", className)}
       data-state={isOpen ? "open" : "closed"}
     >
       {children}
@@ -142,9 +142,10 @@ const AccordionTrigger: React.FC<{
 const AccordionContent: React.FC<{
   children: React.ReactNode;
   isOpen: boolean;
-}> = ({ children, isOpen }) => {
+  className?: string;
+}> = ({ children, isOpen, className }) => {
   return isOpen ? (
-    <div className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+    <div className={cn("overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down", className)}>
       <div className="pb-4 pt-0">
         {children}
       </div>
