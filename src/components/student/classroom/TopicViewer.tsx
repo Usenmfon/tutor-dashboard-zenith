@@ -1,10 +1,26 @@
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, CheckCircle, FileText, MessageSquare } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  ArrowLeft, 
+  BookOpen, 
+  FileText, 
+  ExternalLink, 
+  Clock,
+  CheckCircle,
+  ClipboardList
+} from "lucide-react";
 
 interface TopicViewerProps {
   classroomId: string;
@@ -13,114 +29,167 @@ interface TopicViewerProps {
 
 const TopicViewer: React.FC<TopicViewerProps> = ({ classroomId, topicId }) => {
   const navigate = useNavigate();
-  const [completed, setCompleted] = useState(false);
-  
-  // Mock topic data
+  const [activeTab, setActiveTab] = useState("content");
+
+  // Mock data for the topic
   const topic = {
     id: topicId,
-    title: "Design Thinking Process",
-    description: "Learn the five stages of the design thinking process and how to apply them.",
-    videoUrl: "https://example.com/videos/design-thinking.mp4",
-    instructor: "Thomas Anderson",
-    duration: "18 min",
-    attachments: [
-      { id: "att-1", name: "Design Thinking Worksheet", type: "pdf" },
-      { id: "att-2", name: "Example Projects", type: "zip" }
+    title: "Design Principles",
+    moduleTitle: "Introduction to UI Design",
+    description: "Learn about the fundamental principles of design that guide UI development.",
+    type: "video",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Sample embed URL
+    content: `
+      <div>
+        <h2>Core Design Principles</h2>
+        <p>The following principles form the foundation of good UI design:</p>
+        <ul>
+          <li><strong>Balance:</strong> Distribution of visual weight</li>
+          <li><strong>Contrast:</strong> Differentiation between elements</li>
+          <li><strong>Consistency:</strong> Unified design language</li>
+          <li><strong>Alignment:</strong> Organized layout structure</li>
+          <li><strong>Proximity:</strong> Grouping related elements</li>
+        </ul>
+        <p>Understanding and applying these principles will help you create intuitive and visually appealing interfaces.</p>
+      </div>
+    `,
+    duration: "18 minutes",
+    completed: false,
+    materials: [
+      { name: "Design Principles Cheat Sheet", url: "#", type: "pdf" },
+      { name: "UI Examples Gallery", url: "#", type: "link" }
     ],
     assignment: {
-      id: "assignment-1",
-      title: "Create a Design Thinking Process Map",
-      description: "Apply the design thinking process to solve a real-world problem.",
-      dueDate: "2023-09-15"
+      id: "assign-1",
+      title: "Design Principles Analysis",
+      description: "Analyze a website of your choice using the design principles discussed in this topic.",
+      dueDate: "October 10, 2023",
+      status: "pending",
+      submissionLink: "https://forms.example.com/submit"
     }
   };
-  
-  const handleComplete = () => {
-    setCompleted(true);
-    // In a real app, you would save this to the backend
+
+  const handleCompleteContent = () => {
+    // In a real app, this would update the completion status in the backend
+    console.log(`Marking topic ${topicId} as complete`);
+    // show success message or update UI
   };
-  
-  const handleBack = () => {
+
+  const handleBackToClassroom = () => {
     navigate(`/student-classroom/${classroomId}`);
   };
-  
-  const handleDownload = (attachmentId: string) => {
-    console.log("Downloading attachment:", attachmentId);
-  };
-  
-  const handleAssignment = () => {
-    navigate(`/student-assignments?id=${topic.assignment.id}`);
-  };
-  
+
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={handleBack}>
-          <ArrowLeft size={16} className="mr-2" />
+      <div className="flex items-center mb-6 space-x-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="pl-0"
+          onClick={handleBackToClassroom}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Classroom
         </Button>
       </div>
-      
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight mb-1">{topic.title}</h1>
-        <p className="text-muted-foreground">{topic.description}</p>
-        <div className="flex items-center gap-2 mt-2 text-sm">
-          <span>Instructor: {topic.instructor}</span>
-          <span>•</span>
-          <span>{topic.duration}</span>
-        </div>
-      </div>
-      
-      <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
-        {/* In a real app, this would be an actual video player */}
-        <div className="text-white">Video Player: {topic.title}</div>
-      </div>
-      
-      <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-          {completed ? (
-            <div className="flex items-center text-green-500">
-              <CheckCircle size={20} className="mr-1" />
-              Completed
+
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl">{topic.title}</CardTitle>
+              <CardDescription className="mt-1">
+                Module: {topic.moduleTitle}
+              </CardDescription>
+              <div className="flex items-center mt-2 gap-2">
+                <Badge variant="outline">{topic.type === "video" ? "Video" : "Document"}</Badge>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4 mr-1" />
+                  {topic.duration}
+                </div>
+              </div>
             </div>
-          ) : (
-            <Button onClick={handleComplete}>Mark as Completed</Button>
-          )}
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleAssignment}>
-            <FileText size={16} className="mr-2" />
-            View Assignment
-          </Button>
-        </div>
-      </div>
-      
-      <Tabs defaultValue="resources" className="w-full">
+            <Badge className={topic.completed ? "bg-green-100 text-green-600" : ""}>
+              {topic.completed ? "Completed" : "In Progress"}
+            </Badge>
+          </div>
+        </CardHeader>
+      </Card>
+
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
-          <TabsTrigger value="resources">Resources</TabsTrigger>
-          <TabsTrigger value="discussion">Discussion</TabsTrigger>
-          <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="content" className="flex items-center">
+            <BookOpen className="mr-2 h-4 w-4" />
+            Content
+          </TabsTrigger>
+          <TabsTrigger value="materials" className="flex items-center">
+            <FileText className="mr-2 h-4 w-4" />
+            Materials
+          </TabsTrigger>
+          <TabsTrigger value="assignment" className="flex items-center">
+            <ClipboardList className="mr-2 h-4 w-4" />
+            Assignment
+          </TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="resources">
+
+        <TabsContent value="content" className="space-y-6">
           <Card>
             <CardContent className="pt-6">
-              <h3 className="font-semibold mb-3">Attachments</h3>
-              <div className="space-y-2">
-                {topic.attachments.map((attachment) => (
-                  <div key={attachment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <FileText size={16} />
-                      <span>{attachment.name}</span>
-                      <span className="text-xs uppercase text-muted-foreground">({attachment.type})</span>
+              {topic.type === "video" ? (
+                <div className="aspect-video mb-6">
+                  <iframe
+                    src={topic.videoUrl}
+                    className="w-full h-full rounded-md"
+                    title={topic.title}
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ) : null}
+              
+              <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: topic.content }}></div>
+              
+              {!topic.completed && (
+                <div className="mt-6 flex justify-end">
+                  <Button onClick={handleCompleteContent}>
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    Mark as Complete
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="materials" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Additional Learning Materials</CardTitle>
+              <CardDescription>
+                Resources to help you understand this topic better
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {topic.materials.map((material, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-center justify-between p-3 rounded-md bg-muted/20"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                        {material.type === "pdf" ? (
+                          <FileText size={16} />
+                        ) : (
+                          <ExternalLink size={16} />
+                        )}
+                      </div>
+                      <span className="font-medium">{material.name}</span>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleDownload(attachment.id)}
-                    >
-                      <Download size={16} />
+                    
+                    <Button size="sm" variant="outline" asChild>
+                      <a href={material.url} target="_blank" rel="noopener noreferrer">
+                        Download
+                      </a>
                     </Button>
                   </div>
                 ))}
@@ -128,35 +197,42 @@ const TopicViewer: React.FC<TopicViewerProps> = ({ classroomId, topicId }) => {
             </CardContent>
           </Card>
         </TabsContent>
-        
-        <TabsContent value="discussion">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-center py-8">
-                <div className="text-center">
-                  <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
-                  <h3 className="font-medium">Join the Discussion</h3>
-                  <p className="text-sm text-muted-foreground mb-4">Ask questions and share your thoughts</p>
-                  <Button>Start Discussion</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="notes">
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-semibold mb-3">Your Notes</h3>
-              <textarea 
-                className="w-full min-h-[200px] p-3 border rounded-md"
-                placeholder="Type your notes here..."
-              ></textarea>
-              <div className="flex justify-end mt-4">
-                <Button>Save Notes</Button>
-              </div>
-            </CardContent>
-          </Card>
+
+        <TabsContent value="assignment" className="space-y-6">
+          {topic.assignment ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>{topic.assignment.title}</CardTitle>
+                <CardDescription>Due: {topic.assignment.dueDate}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4 text-sm">{topic.assignment.description}</p>
+                <Badge 
+                  className={
+                    topic.assignment.status === 'submitted' 
+                      ? 'bg-green-100 text-green-600' 
+                      : 'bg-amber-100 text-amber-600'
+                  }
+                >
+                  {topic.assignment.status === 'submitted' ? 'Submitted' : 'Pending Submission'}
+                </Badge>
+              </CardContent>
+              <CardFooter>
+                {topic.assignment.status !== 'submitted' && (
+                  <Button className="w-full sm:w-auto" onClick={() => window.open(topic.assignment?.submissionLink, '_blank')}>
+                    Submit Assignment
+                    <ExternalLink size={14} className="ml-2" />
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="py-6 text-center">
+                <p className="text-muted-foreground">No assignment for this topic.</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

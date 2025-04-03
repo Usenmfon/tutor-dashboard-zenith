@@ -1,11 +1,30 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Video, Users, FileText, Calendar } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ArrowLeft,
+  Users,
+  BookOpen,
+  FileText,
+  ClipboardList,
+  BarChart2,
+  Megaphone,
+  CalendarDays,
+  CheckCircle,
+  MessageSquare,
+  ExternalLink
+} from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 
 interface ClassroomEntryProps {
@@ -14,144 +33,247 @@ interface ClassroomEntryProps {
 
 const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
   const navigate = useNavigate();
-  
+  const [activeTab, setActiveTab] = useState("modules");
+
   // Mock data for classroom details
   const classroom = {
     id: classroomId,
-    title: "UI/UX Design Workshop",
+    name: "UI Design Fundamentals",
+    description: "A comprehensive introduction to UI design principles and practices.",
     instructor: "Thomas Anderson",
-    progress: 65,
-    nextClass: "Tomorrow, 3:00 PM",
+    instructorRole: "Lead Tutor",
+    instructorImage: "https://i.pravatar.cc/150?img=33",
+    startDate: "2023-08-15",
+    endDate: "2023-12-15",
+    moduleCount: 6,
+    completedModules: 4,
+    progress: 68,
+    studentCount: 24,
+    nextSession: "Tomorrow, 3:00 PM",
     modules: [
       {
-        id: "module-1",
-        title: "Introduction to UI/UX",
-        progress: 100,
+        id: "mod-1",
+        title: "Introduction to UI Design",
         topics: [
-          { id: "topic-1", title: "UI vs UX", type: "video", completed: true, duration: "15 min" },
-          { id: "topic-2", title: "Design Thinking", type: "video", completed: true, duration: "20 min" }
-        ]
+          { id: "top-1", title: "Design Principles", completed: true, type: "video" },
+          { id: "top-2", title: "UI Elements", completed: true, type: "pdf" },
+          { id: "top-3", title: "Color Theory", completed: false, type: "video" },
+        ],
+        progress: 75
       },
       {
-        id: "module-2",
-        title: "User Research",
-        progress: 50,
+        id: "mod-2",
+        title: "Layout & Composition",
         topics: [
-          { id: "topic-3", title: "Research Methods", type: "video", completed: true, duration: "25 min" },
-          { id: "topic-4", title: "User Personas", type: "video", completed: false, duration: "18 min" }
-        ]
+          { id: "top-4", title: "Grid Systems", completed: false, type: "video" },
+          { id: "top-5", title: "Responsive Design", completed: false, type: "video" },
+        ],
+        progress: 0
       }
     ],
     assignments: [
-      { id: "assignment-1", title: "Create a User Flow", due: "2023-09-10", status: "completed" },
-      { id: "assignment-2", title: "Design a Mobile App Wireframe", due: "2023-09-15", status: "pending" }
+      {
+        id: "asgn-1",
+        title: "Design Principles Analysis",
+        dueDate: "2023-09-20",
+        status: "submitted",
+        grade: "A",
+        feedback: "Excellent analysis of design principles."
+      },
+      {
+        id: "asgn-2",
+        title: "UI Components Creation",
+        dueDate: "2023-10-05",
+        status: "pending",
+        submissionLink: "https://forms.example.com/submit"
+      }
     ],
-    resources: [
-      { id: "resource-1", title: "UI/UX Design Guidelines", type: "pdf" },
-      { id: "resource-2", title: "Design System Templates", type: "zip" }
+    announcements: [
+      {
+        id: "ann-1",
+        title: "Welcome to the class!",
+        content: "Welcome to UI Design Fundamentals. Please review the syllabus and prepare for our first session.",
+        date: "2023-08-14",
+        author: "Thomas Anderson"
+      },
+      {
+        id: "ann-2",
+        title: "Assignment Deadline Extended",
+        content: "The deadline for the UI Components Creation assignment has been extended to October 5th.",
+        date: "2023-09-25",
+        author: "Thomas Anderson"
+      }
     ],
-    students: 24
+    students: [
+      { id: "std-1", name: "Emily Johnson", image: "https://i.pravatar.cc/150?img=1" },
+      { id: "std-2", name: "Michael Chen", image: "https://i.pravatar.cc/150?img=2" },
+      { id: "std-3", name: "Sara Williams", image: "https://i.pravatar.cc/150?img=3" },
+      { id: "std-4", name: "David Kim", image: "https://i.pravatar.cc/150?img=4" },
+    ],
+    feeds: [
+      {
+        id: "feed-1", 
+        content: "Class materials for today's session have been uploaded.",
+        author: "Thomas Anderson",
+        authorRole: "Instructor",
+        date: "2 hours ago",
+        type: "announcement"
+      },
+      {
+        id: "feed-2", 
+        content: "Has anyone started on the UI Components assignment?",
+        author: "Emily Johnson",
+        authorRole: "Student",
+        date: "Yesterday",
+        type: "question"
+      },
+      {
+        id: "feed-3", 
+        content: "Great session today! Looking forward to the next one.",
+        author: "Michael Chen",
+        authorRole: "Student",
+        date: "2 days ago",
+        type: "comment"
+      }
+    ]
   };
-  
-  const handleAssignmentClick = (assignmentId: string) => {
-    navigate(`/student-assignments?id=${assignmentId}`);
-  };
-  
-  const handleResourceClick = (resourceId: string) => {
-    // Download or view resource
-    console.log("Opening resource:", resourceId);
-  };
-  
-  const handleWatchVideo = (topicId: string) => {
+
+  const handleViewTopic = (topicId: string) => {
     navigate(`/student-classroom/${classroomId}/topic/${topicId}`);
   };
-  
+
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-1">{classroom.title}</h1>
-          <p className="text-muted-foreground">Instructor: {classroom.instructor}</p>
-        </div>
+      <div className="flex items-center mb-6 space-x-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="pl-0"
+          onClick={() => navigate("/student-classrooms")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Classrooms
+        </Button>
+      </div>
+
+      <Card className="mb-6">
+        <CardHeader className="pb-4">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+            <div>
+              <CardTitle className="text-2xl">{classroom.name}</CardTitle>
+              <CardDescription className="mt-1">{classroom.description}</CardDescription>
+              
+              <div className="flex items-center mt-2">
+                <Avatar className="h-8 w-8 mr-2">
+                  <img src={classroom.instructorImage} alt={classroom.instructor} />
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">{classroom.instructor}</p>
+                  <p className="text-xs text-muted-foreground">{classroom.instructorRole}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-start md:items-end gap-2">
+              <Badge variant="outline" className="bg-primary/10 text-primary">
+                Progress: {classroom.progress}%
+              </Badge>
+              <div className="text-sm text-muted-foreground">
+                Next Session: {classroom.nextSession}
+              </div>
+            </div>
+          </div>
+        </CardHeader>
         
-        <div className="flex items-center gap-3">
-          <Badge variant="outline" className="flex items-center gap-1">
-            <Users size={14} />
-            {classroom.students} Students
-          </Badge>
-          <Badge variant="outline" className="bg-primary/10 text-primary">
-            {classroom.progress}% Complete
-          </Badge>
-        </div>
-      </div>
-      
-      <div className="w-full bg-secondary h-2 rounded-full">
-        <div 
-          className="bg-primary h-2 rounded-full" 
-          style={{ width: `${classroom.progress}%` }}
-        ></div>
-      </div>
-      
-      <Tabs defaultValue="modules" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="modules" className="flex items-center gap-2">
-            <BookOpen size={16} />
+        <CardContent>
+          <div className="mb-4">
+            <Progress value={classroom.progress} className="h-2" />
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            <div className="bg-muted/20 p-4 rounded-md">
+              <div className="font-medium">Start Date</div>
+              <div>{classroom.startDate}</div>
+            </div>
+            <div className="bg-muted/20 p-4 rounded-md">
+              <div className="font-medium">End Date</div>
+              <div>{classroom.endDate}</div>
+            </div>
+            <div className="bg-muted/20 p-4 rounded-md">
+              <div className="font-medium">Students</div>
+              <div>{classroom.studentCount}</div>
+            </div>
+            <div className="bg-muted/20 p-4 rounded-md">
+              <div className="font-medium">Modules</div>
+              <div>{classroom.completedModules}/{classroom.moduleCount} Completed</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mb-4 flex flex-wrap">
+          <TabsTrigger value="modules" className="flex items-center">
+            <BookOpen className="mr-2 h-4 w-4" />
             Modules
           </TabsTrigger>
-          <TabsTrigger value="assignments" className="flex items-center gap-2">
-            <FileText size={16} />
+          <TabsTrigger value="assignments" className="flex items-center">
+            <ClipboardList className="mr-2 h-4 w-4" />
             Assignments
           </TabsTrigger>
-          <TabsTrigger value="live-classes" className="flex items-center gap-2">
-            <Video size={16} />
-            Live Classes
+          <TabsTrigger value="students" className="flex items-center">
+            <Users className="mr-2 h-4 w-4" />
+            Students
           </TabsTrigger>
-          <TabsTrigger value="resources" className="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-box">
-              <path d="M14.5 22H18a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8.5Z" />
-              <polyline points="14 2 14 8 20 8" />
-              <path d="M9 10h6" />
-              <path d="M9 14h6" />
-              <path d="M9 18h6" />
-            </svg>
-            Resources
+          <TabsTrigger value="feed" className="flex items-center">
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Class Feed
+          </TabsTrigger>
+          <TabsTrigger value="announcements" className="flex items-center">
+            <Megaphone className="mr-2 h-4 w-4" />
+            Announcements
           </TabsTrigger>
         </TabsList>
-        
-        {/* Modules Tab */}
+
         <TabsContent value="modules" className="space-y-6">
           {classroom.modules.map((module) => (
-            <Card key={module.id}>
+            <Card key={module.id} className="overflow-hidden">
               <CardHeader className="pb-2">
-                <CardTitle>{module.title}</CardTitle>
-                <CardDescription>{module.topics.length} topics</CardDescription>
-                <div className="mt-2">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Progress</span>
-                    <span>{module.progress}%</span>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-lg">{module.title}</CardTitle>
+                    <CardDescription>{module.topics.length} topics</CardDescription>
                   </div>
-                  <Progress value={module.progress} className="h-2" />
+                  <Badge variant="outline" className={module.progress === 100 ? "bg-green-100 text-green-600" : "bg-primary/10 text-primary"}>
+                    {module.progress}% Complete
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent>
+                <div className="mb-4">
+                  <Progress value={module.progress} className="h-2" />
+                </div>
                 <div className="space-y-3">
                   {module.topics.map((topic) => (
-                    <div key={topic.id} className="flex items-center justify-between p-2 rounded-md hover:bg-secondary/50">
+                    <div 
+                      key={topic.id} 
+                      className="flex items-center justify-between p-2 rounded-md hover:bg-secondary/50 transition-colors"
+                    >
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${topic.completed ? 'bg-green-100 text-green-600' : 'bg-secondary'}`}>
-                          <Video size={16} />
+                          {topic.completed ? <CheckCircle size={16} /> : topic.type === 'video' ? <Video size={16} /> : <FileText size={16} />}
                         </div>
                         <div>
                           <p className="font-medium">{topic.title}</p>
-                          <p className="text-xs text-muted-foreground">{topic.duration}</p>
+                          <p className="text-xs text-muted-foreground">{topic.type === 'video' ? 'Video' : 'Document'}</p>
                         </div>
                       </div>
                       <Button 
                         variant={topic.completed ? "outline" : "default"}
                         size="sm"
-                        onClick={() => handleWatchVideo(topic.id)}
+                        onClick={() => handleViewTopic(topic.id)}
                       >
-                        {topic.completed ? "Rewatch" : "Watch Now"}
+                        {topic.completed ? "Review" : "Start"}
                       </Button>
                     </div>
                   ))}
@@ -160,98 +282,138 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
             </Card>
           ))}
         </TabsContent>
-        
-        {/* Assignments Tab */}
-        <TabsContent value="assignments">
-          <Card>
-            <CardHeader>
-              <CardTitle>Classroom Assignments</CardTitle>
-              <CardDescription>All assignments for this classroom</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {classroom.assignments.map((assignment) => (
-                  <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{assignment.title}</p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar size={14} />
-                        <span>Due: {assignment.due}</span>
+
+        <TabsContent value="assignments" className="space-y-6">
+          {classroom.assignments.map((assignment) => (
+            <Card key={assignment.id}>
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-lg">{assignment.title}</CardTitle>
+                    <CardDescription>Due: {assignment.dueDate}</CardDescription>
+                  </div>
+                  <Badge 
+                    variant={assignment.status === 'submitted' ? 'outline' : 'default'}
+                    className={
+                      assignment.status === 'submitted' 
+                        ? 'bg-green-100 text-green-600' 
+                        : 'bg-amber-100 text-amber-600'
+                    }
+                  >
+                    {assignment.status === 'submitted' ? 'Submitted' : 'Pending'}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {assignment.status === 'submitted' ? (
+                  <div className="space-y-4">
+                    <div className="bg-muted/20 p-4 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium">Grade</p>
+                          <p className="text-2xl font-bold">{assignment.grade}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">Feedback</p>
+                          <p className="text-sm">{assignment.feedback}</p>
+                        </div>
                       </div>
                     </div>
-                    <Badge variant={assignment.status === "completed" ? "success" : "outline"}>
-                      {assignment.status === "completed" ? "Completed" : "Pending"}
-                    </Badge>
-                    <Button 
-                      onClick={() => handleAssignmentClick(assignment.id)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {assignment.status === "completed" ? "View Submission" : "Submit Assignment"}
+                    <Button variant="outline" className="w-full">
+                      View Submission
                     </Button>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-sm">
+                      Complete this assignment and submit it before the due date.
+                    </p>
+                    <Button 
+                      className="w-full" 
+                      onClick={() => window.open(assignment.submissionLink, '_blank')}
+                    >
+                      Submit Assignment
+                      <ExternalLink size={16} className="ml-2" />
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </TabsContent>
-        
-        {/* Live Classes Tab */}
-        <TabsContent value="live-classes">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming Live Classes</CardTitle>
-              <CardDescription>Join interactive sessions with your instructor</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="p-6 text-center">
-                <Video className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-xl font-medium">Next Live Class</h3>
-                <p className="text-muted-foreground mb-4">Tomorrow, 3:00 PM - Advanced Prototyping</p>
-                <Button>Join When Available</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Resources Tab */}
-        <TabsContent value="resources">
-          <Card>
-            <CardHeader>
-              <CardTitle>Course Resources</CardTitle>
-              <CardDescription>Supplementary materials for your learning</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {classroom.resources.map((resource) => (
-                  <div key={resource.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-secondary rounded-md flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-text">
-                          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                          <polyline points="14 2 14 8 20 8"/>
-                          <line x1="16" x2="8" y1="13" y2="13"/>
-                          <line x1="16" x2="8" y1="17" y2="17"/>
-                          <line x1="10" x2="8" y1="9" y2="9"/>
-                        </svg>
-                      </div>
+
+        <TabsContent value="students" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Classmates</CardTitle>
+                <CardDescription>Students enrolled in this classroom</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  {classroom.students.map((student) => (
+                    <div key={student.id} className="flex items-center gap-3 p-2 rounded-md">
+                      <Avatar className="h-10 w-10">
+                        <img src={student.image} alt={student.name} />
+                      </Avatar>
                       <div>
-                        <p className="font-medium">{resource.title}</p>
-                        <p className="text-xs text-muted-foreground uppercase">{resource.type} file</p>
+                        <p className="font-medium text-sm">{student.name}</p>
                       </div>
                     </div>
-                    <Button 
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleResourceClick(resource.id)}
-                    >
-                      Download
-                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="feed" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Class Feed</CardTitle>
+              <CardDescription>Recent activity in this classroom</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {classroom.feeds.map((feed) => (
+                  <div 
+                    key={feed.id} 
+                    className="border-b border-border/50 last:border-0 pb-4 last:pb-0"
+                  >
+                    <div className="flex justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{feed.author}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {feed.authorRole}
+                        </Badge>
+                      </div>
+                      <span className="text-sm text-muted-foreground">{feed.date}</span>
+                    </div>
+                    <p className="text-sm">{feed.content}</p>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="announcements" className="space-y-6">
+          <div className="space-y-4">
+            {classroom.announcements.map((announcement) => (
+              <Card key={announcement.id}>
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">{announcement.title}</CardTitle>
+                    <span className="text-sm text-muted-foreground">{announcement.date}</span>
+                  </div>
+                  <CardDescription>by {announcement.author}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">{announcement.content}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
