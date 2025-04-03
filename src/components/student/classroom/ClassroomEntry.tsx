@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -23,10 +24,15 @@ import {
   CheckCircle,
   MessageSquare,
   ExternalLink,
-  Video
+  Video,
+  User,
+  Heart,
+  Share,
+  Calendar
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ClassroomEntryProps {
   classroomId: string;
@@ -35,6 +41,7 @@ interface ClassroomEntryProps {
 const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("modules");
+  const [newPost, setNewPost] = useState("");
 
   // Mock data for classroom details
   const classroom = {
@@ -58,7 +65,7 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
         topics: [
           { id: "top-1", title: "Design Principles", completed: true, type: "video" },
           { id: "top-2", title: "UI Elements", completed: true, type: "pdf" },
-          { id: "top-3", title: "Color Theory", completed: false, type: "video" },
+          { id: "top-3", title: "Color Theory", completed: false, type: "document" },
         ],
         progress: 75
       },
@@ -66,8 +73,8 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
         id: "mod-2",
         title: "Layout & Composition",
         topics: [
-          { id: "top-4", title: "Grid Systems", completed: false, type: "video" },
-          { id: "top-5", title: "Responsive Design", completed: false, type: "video" },
+          { id: "top-4", title: "Grid Systems", completed: false, type: "presentation" },
+          { id: "top-5", title: "Responsive Design", completed: false, type: "link" },
         ],
         progress: 0
       }
@@ -118,7 +125,9 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
         author: "Thomas Anderson",
         authorRole: "Instructor",
         date: "2 hours ago",
-        type: "announcement"
+        type: "announcement",
+        likes: 5,
+        comments: 2
       },
       {
         id: "feed-2", 
@@ -126,7 +135,9 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
         author: "Emily Johnson",
         authorRole: "Student",
         date: "Yesterday",
-        type: "question"
+        type: "question",
+        likes: 3,
+        comments: 4
       },
       {
         id: "feed-3", 
@@ -134,13 +145,43 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
         author: "Michael Chen",
         authorRole: "Student",
         date: "2 days ago",
-        type: "comment"
+        type: "comment",
+        likes: 7,
+        comments: 1
       }
     ]
   };
 
   const handleViewTopic = (topicId: string) => {
     navigate(`/student-classroom/${classroomId}/topic/${topicId}`);
+  };
+
+  const handlePostSubmit = () => {
+    if (!newPost.trim()) return;
+    // In a real app, this would send the post to an API
+    setNewPost("");
+  };
+
+  const handleLike = (postId: string) => {
+    // In a real app, this would update likes via an API
+    console.log(`Liked post: ${postId}`);
+  };
+
+  const getMaterialIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return <FileText className="h-4 w-4" />;
+      case "presentation":
+        return <ClipboardList className="h-4 w-4" />;
+      case "document":
+        return <FileText className="h-4 w-4" />;
+      case "video":
+        return <Video className="h-4 w-4" />;
+      case "link":
+        return <ExternalLink className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
+    }
   };
 
   return (
@@ -262,11 +303,11 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${topic.completed ? 'bg-green-100 text-green-600' : 'bg-secondary'}`}>
-                          {topic.completed ? <CheckCircle size={16} /> : topic.type === 'video' ? <Video size={16} /> : <FileText size={16} />}
+                          {topic.completed ? <CheckCircle size={16} /> : getMaterialIcon(topic.type)}
                         </div>
                         <div>
                           <p className="font-medium">{topic.title}</p>
-                          <p className="text-xs text-muted-foreground">{topic.type === 'video' ? 'Video' : 'Document'}</p>
+                          <p className="text-xs text-muted-foreground capitalize">{topic.type}</p>
                         </div>
                       </div>
                       <Button 
@@ -369,33 +410,85 @@ const ClassroomEntry: React.FC<ClassroomEntryProps> = ({ classroomId }) => {
         </TabsContent>
 
         <TabsContent value="feed" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Class Feed</CardTitle>
-              <CardDescription>Recent activity in this classroom</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {classroom.feeds.map((feed) => (
-                  <div 
-                    key={feed.id} 
-                    className="border-b border-border/50 last:border-0 pb-4 last:pb-0"
-                  >
-                    <div className="flex justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{feed.author}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {feed.authorRole}
-                        </Badge>
-                      </div>
-                      <span className="text-sm text-muted-foreground">{feed.date}</span>
-                    </div>
-                    <p className="text-sm">{feed.content}</p>
-                  </div>
-                ))}
+          <Card className="border-border/50 shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-10 w-10 border-2 border-primary/10">
+                  <User className="h-6 w-6" />
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">Share with your class</p>
+                </div>
               </div>
+            </CardHeader>
+            <CardContent className="pb-3">
+              <Textarea
+                placeholder="Post something to your class..."
+                className="min-h-[100px] resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+              />
             </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button onClick={handlePostSubmit} disabled={!newPost.trim()}>Post</Button>
+            </CardFooter>
           </Card>
+
+          <div className="space-y-4">
+            {classroom.feeds.map((post, index) => (
+              <Card key={post.id} className="overflow-hidden transition-colors duration-200 border-border/50 shadow-sm">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="h-10 w-10 border-2 border-primary/10">
+                      <User className="h-6 w-6" />
+                    </Avatar>
+                    <div>
+                      <p className="font-medium leading-none">{post.author}</p>
+                      <p className="text-sm text-muted-foreground">{post.authorRole}</p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pb-3">
+                  <p className="text-sm whitespace-pre-wrap">{post.content}</p>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between border-t border-border/40 pt-3">
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                    <div className="flex items-center space-x-1">
+                      <Calendar size={14} />
+                      <span>{post.date}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 sm:space-x-4">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex items-center space-x-1 text-sm"
+                      onClick={() => handleLike(post.id)}
+                    >
+                      <Heart size={14} className="text-muted-foreground" />
+                      <span>{post.likes}</span>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex items-center space-x-1 text-sm"
+                    >
+                      <MessageSquare size={14} className="text-muted-foreground" />
+                      <span>{post.comments}</span>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex items-center space-x-1 text-sm hidden sm:flex"
+                    >
+                      <Share size={14} className="text-muted-foreground" />
+                      <span className="hidden sm:inline">Share</span>
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
 
         <TabsContent value="announcements" className="space-y-6">

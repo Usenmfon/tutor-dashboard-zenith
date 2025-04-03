@@ -43,6 +43,7 @@ import AdminSystemSettings from "./pages/admin/SystemSettings";
 import CourseVideo from "./pages/student/CourseVideo";
 import StudentClassroomEntryPage from "./pages/student/ClassroomEntry";
 import StudentTopicViewerPage from "./pages/student/TopicViewer";
+import StudentAssignmentDetails from "./pages/student/AssignmentDetails";
 
 const queryClient = new QueryClient();
 
@@ -211,6 +212,8 @@ function App() {
                   <StudentLayout><div>Student Achievements Coming Soon</div></StudentLayout>
                 </ProtectedRoute>
               } />
+              
+              <Route path="/student/assignment/:id" element={<StudentAssignmentDetails />} />
               
               <Route path="*" element={<Layout><NotFound /></Layout>} />
             </Routes>

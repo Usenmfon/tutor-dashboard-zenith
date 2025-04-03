@@ -16,8 +16,6 @@ import {
   UserRound, 
   Calendar, 
   BookOpen, 
-  Video, 
-  FileText, 
   Clock, 
   MessageSquare,
   Users,
@@ -36,8 +34,7 @@ const classrooms = [
     completedModules: 4,
     nextSession: "Tomorrow, 3:00 PM",
     assignments: 3,
-    completedAssignments: 1,
-    coverImage: "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    completedAssignments: 1
   },
   {
     id: 2,
@@ -48,8 +45,7 @@ const classrooms = [
     completedModules: 2,
     nextSession: "Thursday, 5:00 PM",
     assignments: 4,
-    completedAssignments: 1,
-    coverImage: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    completedAssignments: 1
   },
 ];
 
@@ -61,8 +57,7 @@ const upcomingClassrooms = [
     instructorName: "Michael Rodriguez",
     studentsCount: 18,
     startDate: "September 15, 2023",
-    duration: "8 weeks",
-    coverImage: "https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    duration: "8 weeks"
   },
   {
     id: 4,
@@ -70,8 +65,7 @@ const upcomingClassrooms = [
     instructorName: "Sophia Williams",
     studentsCount: 24,
     startDate: "October 5, 2023",
-    duration: "6 weeks",
-    coverImage: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+    duration: "6 weeks"
   },
 ];
 
@@ -98,22 +92,7 @@ const StudentClassrooms = () => {
         <TabsContent value="enrolled" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {classrooms.map((classroom) => (
-              <Card key={classroom.id} className="hover:shadow-md transition-shadow overflow-hidden flex flex-col">
-                <div className="h-40 bg-gray-200 relative overflow-hidden">
-                  {classroom.coverImage && (
-                    <img 
-                      src={classroom.coverImage} 
-                      alt={classroom.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                    <Badge variant="outline" className="bg-primary/10 text-primary border-none">
-                      {classroom.completedModules}/{classroom.moduleCount} Modules
-                    </Badge>
-                  </div>
-                </div>
-                
+              <Card key={classroom.id} className="hover:shadow-md transition-shadow flex flex-col">
                 <CardHeader className="pb-2">
                   <CardTitle>{classroom.title}</CardTitle>
                   <CardDescription>Instructor: {classroom.instructorName}</CardDescription>
@@ -126,6 +105,10 @@ const StudentClassrooms = () => {
                         className="bg-primary h-2 rounded-full" 
                         style={{ width: `${(classroom.completedModules / classroom.moduleCount) * 100}%` }}
                       ></div>
+                    </div>
+                    <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                      <span>{classroom.completedModules}/{classroom.moduleCount} modules</span>
+                      <span>{Math.round((classroom.completedModules / classroom.moduleCount) * 100)}% complete</span>
                     </div>
                   </div>
                   
@@ -147,7 +130,7 @@ const StudentClassrooms = () => {
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      <FileText size={16} className="text-primary" />
+                      <BookOpen size={16} className="text-primary" />
                       <div className="text-sm">
                         <p className="font-medium">Assignments</p>
                         <p className="text-muted-foreground">
@@ -174,23 +157,17 @@ const StudentClassrooms = () => {
         <TabsContent value="upcoming" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {upcomingClassrooms.map((classroom) => (
-              <Card key={classroom.id} className="hover:shadow-md transition-shadow overflow-hidden flex flex-col">
-                <div className="h-40 bg-gray-200 relative overflow-hidden">
-                  {classroom.coverImage && (
-                    <img 
-                      src={classroom.coverImage} 
-                      alt={classroom.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  <Badge className="absolute top-3 right-3">
-                    Upcoming
-                  </Badge>
-                </div>
-                
+              <Card key={classroom.id} className="hover:shadow-md transition-shadow flex flex-col">
                 <CardHeader>
-                  <CardTitle>{classroom.title}</CardTitle>
-                  <CardDescription>Instructor: {classroom.instructorName}</CardDescription>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>{classroom.title}</CardTitle>
+                      <CardDescription>Instructor: {classroom.instructorName}</CardDescription>
+                    </div>
+                    <Badge>
+                      Upcoming
+                    </Badge>
+                  </div>
                 </CardHeader>
                 
                 <CardContent className="flex-grow">
