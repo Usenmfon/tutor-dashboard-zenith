@@ -22,7 +22,8 @@ import {
   CalendarDays,
   CheckCircle,
   MessageSquare,
-  ExternalLink
+  ExternalLink,
+  Video
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
