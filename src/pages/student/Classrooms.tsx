@@ -17,7 +17,6 @@ import {
   Calendar, 
   BookOpen, 
   Clock, 
-  MessageSquare,
   Users,
   Bell
 } from "lucide-react";

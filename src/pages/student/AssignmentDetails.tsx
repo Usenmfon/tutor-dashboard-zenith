@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -22,10 +22,12 @@ import {
   Upload,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import SubmitAssignmentModal from "@/components/student/assignments/SubmitAssignmentModal";
 
 const StudentAssignmentDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   // Mock data for assignment details - in a real app, this would be fetched from an API
   const assignment = {
@@ -123,6 +125,14 @@ const StudentAssignmentDetails = () => {
     }
   };
 
+  const handleOpenSubmitModal = () => {
+    setIsSubmitModalOpen(true);
+  };
+
+  const handleCloseSubmitModal = () => {
+    setIsSubmitModalOpen(false);
+  };
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center mb-4">
@@ -211,6 +221,19 @@ const StudentAssignmentDetails = () => {
                   ))}
                 </div>
               </CardContent>
+              
+              {assignment.status !== 'graded' && (
+                <CardFooter>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={handleOpenSubmitModal}
+                  >
+                    Re-submit Assignment
+                    <Upload className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
           ) : (
             <Card>
@@ -221,13 +244,22 @@ const StudentAssignmentDetails = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="p-8 border-2 border-dashed border-primary/20 rounded-md text-center">
+                <div 
+                  className="p-8 border-2 border-dashed border-primary/20 rounded-md text-center cursor-pointer"
+                  onClick={handleOpenSubmitModal}
+                >
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-muted-foreground">Drag and drop files here, or click to browse</p>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Submit Assignment</Button>
+                <Button 
+                  className="w-full"
+                  onClick={handleOpenSubmitModal}
+                >
+                  Submit Assignment
+                  <Upload className="ml-2 h-4 w-4" />
+                </Button>
               </CardFooter>
             </Card>
           )}
@@ -307,13 +339,24 @@ const StudentAssignmentDetails = () => {
           )}
           
           {assignment.status === 'pending' && (
-            <Button className="w-full">
+            <Button 
+              className="w-full"
+              onClick={handleOpenSubmitModal}
+            >
               Submit Assignment
               <Upload className="ml-2 h-4 w-4" />
             </Button>
           )}
         </div>
       </div>
+
+      <SubmitAssignmentModal
+        isOpen={isSubmitModalOpen}
+        onClose={handleCloseSubmitModal}
+        assignmentId={assignment.id.toString()}
+        assignmentTitle={assignment.title}
+        submissionType="file_upload"
+      />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -213,7 +214,11 @@ function App() {
                 </ProtectedRoute>
               } />
               
-              <Route path="/student/assignment/:id" element={<StudentAssignmentDetails />} />
+              <Route path="/student/assignment/:id" element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout><StudentAssignmentDetails /></StudentLayout>
+                </ProtectedRoute>
+              } />
               
               <Route path="*" element={<Layout><NotFound /></Layout>} />
             </Routes>
