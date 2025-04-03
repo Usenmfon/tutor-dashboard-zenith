@@ -153,7 +153,7 @@ const Login: React.FC = () => {
                 </div>
               </div>
               
-              <Button type="submit" disabled={loading} className="w-full text-[#e47c3b]">
+              <Button type="submit" disabled={loading} className="w-full bg-orange-600 hover:bg-orange-500 text-neutral-50">
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
