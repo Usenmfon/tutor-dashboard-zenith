@@ -58,12 +58,27 @@ const AssignmentDetailsSidebar: React.FC<AssignmentDetailsSidebarProps> = ({
             <span>{formatTime(dueDate)}</span>
           </div>
 
-          <div>
-            <div className="flex justify-between mb-1">
-              <span className="text-sm">Status</span>
-              <span className="text-sm font-medium">{progress}%</span>
+          {/* Progress bar only shown when needed (for in-progress assignments) */}
+          {status === 'in-progress' && (
+            <div>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm">Progress</span>
+                <span className="text-sm font-medium">{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-2" />
             </div>
-            <Progress value={progress} className="h-2" />
+          )}
+          
+          {/* Status indicator */}
+          <div className="flex justify-between items-center">
+            <span className="text-sm">Status</span>
+            <span className={`text-sm font-medium ${
+              status === 'pending' ? 'text-amber-500' : 
+              status === 'submitted' ? 'text-blue-500' :
+              status === 'graded' ? 'text-green-500' : ''
+            }`}>
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </span>
           </div>
         </CardContent>
       </Card>

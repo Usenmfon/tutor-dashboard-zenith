@@ -23,7 +23,7 @@ const StudentAssignmentDetails = () => {
     description: "Analyze the design principles used in three different mobile applications and prepare a detailed report on your findings. Your analysis should include examples of how each principle is applied, and your assessment of its effectiveness.",
     dueDate: "2023-10-15T23:59:59",
     submissionDate: "2023-10-10T14:35:00",
-    status: "submitted", // can be 'pending', 'submitted', 'graded', 'overdue'
+    status: "pending", // changed from 'submitted' to 'pending' to show submit button
     grade: "A",
     maxPoints: 100,
     earnedPoints: 92,
@@ -41,7 +41,9 @@ const StudentAssignmentDetails = () => {
       { name: "Examples Provided", score: 24, maxScore: 25 },
       { name: "Writing Quality", score: 22, maxScore: 25 },
       { name: "Visual Presentation", score: 21, maxScore: 25 },
-    ]
+    ],
+    // Added to show the source of the assignment
+    source: "Course Video" 
   };
 
   const handleOpenSubmitModal = () => {
@@ -70,6 +72,15 @@ const StudentAssignmentDetails = () => {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{assignment.title}</h1>
           <p className="text-muted-foreground">{assignment.course} • {assignment.classroom}</p>
+          
+          {/* Added source indicator */}
+          {assignment.source && (
+            <div className="mt-2">
+              <span className="text-sm bg-secondary/50 px-2 py-1 rounded-full">
+                From: {assignment.source}
+              </span>
+            </div>
+          )}
         </div>
         <AssignmentStatusBadge status={assignment.status} />
       </div>
@@ -87,6 +98,16 @@ const StudentAssignmentDetails = () => {
             submissions={assignment.submissions}
             onSubmit={handleOpenSubmitModal}
           />
+          
+          {/* Added submit button at the bottom for easier access */}
+          {assignment.status === 'pending' && (
+            <div className="flex justify-end">
+              <Button onClick={handleOpenSubmitModal}>
+                <Upload className="mr-2 h-4 w-4" />
+                Submit Assignment
+              </Button>
+            </div>
+          )}
         </div>
 
         <div>
@@ -99,7 +120,7 @@ const StudentAssignmentDetails = () => {
             maxPoints={assignment.maxPoints}
             feedback={assignment.feedback}
             rubric={assignment.rubric}
-            onSubmit={assignment.status === 'pending' ? handleOpenSubmitModal : undefined}
+            onSubmit={handleOpenSubmitModal}
           />
         </div>
       </div>

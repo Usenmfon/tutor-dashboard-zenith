@@ -11,9 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CalendarDays, BookOpen, Clock, Video, CheckCircle, Award } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 const StudentDashboard = () => {
   const { userName } = useUser();
+  const navigate = useNavigate();
 
   // Mock data - in a real app this would come from API
   const enrolledCourses = [
@@ -22,14 +25,22 @@ const StudentDashboard = () => {
       title: "UI/UX Design Fundamentals",
       progress: 65,
       totalModules: 8,
-      completedModules: 5
+      completedModules: 5,
+      nextTopic: {
+        id: "topic-1",
+        title: "Design Thinking Process"
+      }
     },
     {
       id: "2",
       title: "Design Systems Workshop",
       progress: 30,
       totalModules: 6,
-      completedModules: 2
+      completedModules: 2,
+      nextTopic: {
+        id: "topic-2",
+        title: "Component Libraries"
+      }
     }
   ];
 
@@ -62,6 +73,24 @@ const StudentDashboard = () => {
       status: "pending"
     }
   ];
+
+  // Student progress data for the progress chart
+  const progressData = {
+    coursesCompleted: 2,
+    totalCourses: 4,
+    assignmentsCompleted: 12,
+    totalAssignments: 15,
+    averageGrade: "A-",
+    attendanceRate: "92%"
+  };
+
+  const handleContinueLearning = (courseId: string, topicId: string) => {
+    navigate(`/student/course-video/${topicId}`);
+  };
+
+  const handleStartAssignment = (assignmentId: string) => {
+    navigate(`/student/assignment/${assignmentId}`);
+  };
 
   return (
     <div className="container mx-auto py-6 space-y-8">
@@ -96,6 +125,12 @@ const StudentDashboard = () => {
           <CardContent>
             <div className="text-3xl font-bold">2</div>
             <p className="text-sm text-muted-foreground mt-2">Due this week</p>
+            <div className="mt-3">
+              <Progress value={progressData.assignmentsCompleted / progressData.totalAssignments * 100} className="mt-2" />
+              <p className="text-xs text-muted-foreground mt-1">
+                {progressData.assignmentsCompleted} of {progressData.totalAssignments} completed overall
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -103,12 +138,16 @@ const StudentDashboard = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Award size={20} className="text-amber-500" />
-              Achievements
+              Performance
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">3</div>
-            <p className="text-sm text-muted-foreground mt-2">Badges earned this month</p>
+            <div className="text-3xl font-bold">{progressData.averageGrade}</div>
+            <p className="text-sm text-muted-foreground mt-2">Average Grade</p>
+            <div className="mt-2 flex items-center">
+              <span className="text-sm">Attendance:</span>
+              <Badge variant="outline" className="ml-2">{progressData.attendanceRate}</Badge>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -133,9 +172,16 @@ const StudentDashboard = () => {
                     {course.completedModules}/{course.totalModules} modules
                   </span>
                 </div>
-                <Button variant="outline" className="w-full mt-4">
-                  Continue Learning
-                </Button>
+                <div className="mt-4">
+                  <p className="text-sm mb-2">Next up: <span className="font-medium">{course.nextTopic.title}</span></p>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => handleContinueLearning(course.id, course.nextTopic.id)}
+                  >
+                    Continue Learning
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -189,7 +235,12 @@ const StudentDashboard = () => {
                       </div>
                     </div>
                     <div className="mt-2">
-                      <Button size="sm">Start Assignment</Button>
+                      <Button 
+                        size="sm"
+                        onClick={() => handleStartAssignment(assignment.id)}
+                      >
+                        Submit Assignment
+                      </Button>
                     </div>
                   </li>
                 ))}

@@ -1,15 +1,17 @@
 
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, CheckCircle, FileText, MessageSquare } from "lucide-react";
+import { ArrowLeft, Download, CheckCircle, FileText, MessageSquare, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SubmitAssignmentModal from "@/components/student/assignments/SubmitAssignmentModal";
 
 const CourseVideo = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
   const [completed, setCompleted] = useState(false);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   
   // Mock topic data
   const topic = {
@@ -27,7 +29,8 @@ const CourseVideo = () => {
       id: "assignment-1",
       title: "Compare UI and UX in an Existing Product",
       description: "Analyze and document the UI and UX elements of a digital product of your choice.",
-      dueDate: "2023-09-10"
+      dueDate: "2023-09-10",
+      status: "pending" // Added status
     }
   };
   
@@ -45,7 +48,12 @@ const CourseVideo = () => {
   };
   
   const handleAssignment = () => {
-    navigate(`/student-assignments?id=${topic.assignment.id}`);
+    // Open submit modal instead of navigating
+    setIsSubmitModalOpen(true);
+  };
+  
+  const handleCloseModal = () => {
+    setIsSubmitModalOpen(false);
   };
   
   return (
@@ -64,6 +72,8 @@ const CourseVideo = () => {
           <span>Instructor: {topic.instructor}</span>
           <span>•</span>
           <span>{topic.duration}</span>
+          <span>•</span>
+          <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">Student Content</span>
         </div>
       </div>
       
@@ -85,10 +95,12 @@ const CourseVideo = () => {
         </div>
         
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleAssignment}>
-            <FileText size={16} className="mr-2" />
-            View Assignment
-          </Button>
+          {topic.assignment && (
+            <Button onClick={handleAssignment}>
+              <Upload size={16} className="mr-2" />
+              Submit Assignment
+            </Button>
+          )}
         </div>
       </div>
       
@@ -96,6 +108,7 @@ const CourseVideo = () => {
         <TabsList className="mb-4">
           <TabsTrigger value="resources">Resources</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="assignment">Assignment</TabsTrigger>
           <TabsTrigger value="transcript">Transcript</TabsTrigger>
         </TabsList>
         
@@ -140,6 +153,42 @@ const CourseVideo = () => {
           </Card>
         </TabsContent>
         
+        <TabsContent value="assignment">
+          {topic.assignment ? (
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="font-semibold mb-3">{topic.assignment.title}</h3>
+                <p className="text-sm mb-4">{topic.assignment.description}</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
+                    Due: {topic.assignment.dueDate}
+                  </span>
+                  <span className={`text-sm px-2 py-1 rounded-full ${
+                    topic.assignment.status === 'pending' ? 'bg-amber-100 text-amber-800' : 
+                    topic.assignment.status === 'submitted' ? 'bg-blue-100 text-blue-800' : 
+                    'bg-green-100 text-green-800'
+                  }`}>
+                    {topic.assignment.status.charAt(0).toUpperCase() + topic.assignment.status.slice(1)}
+                  </span>
+                </div>
+                <Button 
+                  className="w-full sm:w-auto" 
+                  onClick={handleAssignment}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Submit Assignment
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-muted-foreground text-center">No assignment for this video.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+        
         <TabsContent value="transcript">
           <Card>
             <CardContent className="pt-6">
@@ -160,6 +209,16 @@ const CourseVideo = () => {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {topic.assignment && (
+        <SubmitAssignmentModal
+          isOpen={isSubmitModalOpen}
+          onClose={handleCloseModal}
+          assignmentId={topic.assignment.id}
+          assignmentTitle={topic.assignment.title}
+          submissionType="file_upload"
+        />
+      )}
     </div>
   );
 };
