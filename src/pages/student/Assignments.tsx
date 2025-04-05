@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import SubmitAssignmentModal from "@/components/student/assignments/SubmitAssignmentModal";
 
 // Mock data for student assignments
 const pendingAssignments = [
@@ -65,6 +65,8 @@ const StudentAssignments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [courseFilter, setCourseFilter] = useState("all");
   const navigate = useNavigate();
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<any>(null);
   
   const filterAssignments = (assignments: any[]) => {
     return assignments.filter(assignment => 
@@ -115,6 +117,11 @@ const StudentAssignments = () => {
 
   const handleViewDetails = (id: number) => {
     navigate(`/student/assignment/${id}`);
+  };
+  
+  const handleSubmitAssignment = (assignment: any) => {
+    setSelectedAssignment(assignment);
+    setIsSubmitModalOpen(true);
   };
   
   return (
@@ -190,8 +197,11 @@ const StudentAssignments = () => {
                       >
                         View Details
                       </Button>
-                      <Button className="w-full md:w-auto">
-                        Continue Work
+                      <Button 
+                        className="w-full md:w-auto"
+                        onClick={() => handleSubmitAssignment(assignment)}
+                      >
+                        Submit Assignment
                       </Button>
                     </div>
                   </div>
@@ -270,6 +280,16 @@ const StudentAssignments = () => {
           )}
         </TabsContent>
       </Tabs>
+      
+      {selectedAssignment && (
+        <SubmitAssignmentModal
+          isOpen={isSubmitModalOpen}
+          onClose={() => setIsSubmitModalOpen(false)}
+          assignmentId={selectedAssignment.id.toString()}
+          assignmentTitle={selectedAssignment.title}
+          submissionType="file_upload"
+        />
+      )}
     </div>
   );
 };
