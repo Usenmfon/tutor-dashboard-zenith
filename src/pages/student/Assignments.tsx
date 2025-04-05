@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -63,6 +64,7 @@ const completedAssignments = [
 const StudentAssignments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [courseFilter, setCourseFilter] = useState("all");
+  const navigate = useNavigate();
   
   const filterAssignments = (assignments: any[]) => {
     return assignments.filter(assignment => 
@@ -109,6 +111,10 @@ const StudentAssignments = () => {
     if (days === "Overdue") return "destructive";
     if (days === "Due today") return "warning";
     return "secondary";
+  };
+
+  const handleViewDetails = (id: number) => {
+    navigate(`/student/assignment/${id}`);
   };
   
   return (
@@ -177,7 +183,11 @@ const StudentAssignments = () => {
                     </div>
                     
                     <div className="flex gap-2 w-full md:w-auto">
-                      <Button variant="outline" className="w-full md:w-auto">
+                      <Button 
+                        variant="outline" 
+                        className="w-full md:w-auto"
+                        onClick={() => handleViewDetails(assignment.id)}
+                      >
                         View Details
                       </Button>
                       <Button className="w-full md:w-auto">
@@ -237,7 +247,10 @@ const StudentAssignments = () => {
                       </div>
                     </div>
                     
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline"
+                      onClick={() => handleViewDetails(assignment.id)}
+                    >
                       View Submission
                     </Button>
                   </div>
