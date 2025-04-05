@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Upload } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { formatDate, formatTime } from "./utils";
 import { Button } from "@/components/ui/button";
