@@ -2,12 +2,11 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
-import { Upload, Link, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SubmissionTypeSelector from "./submission/SubmissionTypeSelector";
+import FileUploadForm from "./submission/FileUploadForm";
+import LinkSubmissionForm from "./submission/LinkSubmissionForm";
+import TextSubmissionForm from "./submission/TextSubmissionForm";
 
 interface SubmitAssignmentModalProps {
   isOpen: boolean;
@@ -94,101 +93,31 @@ const SubmitAssignmentModal: React.FC<SubmitAssignmentModalProps> = ({
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Submission Type</Label>
-            <RadioGroup 
-              value={selectedType}
-              onValueChange={(value) => setSelectedType(value as any)}
-              className="flex flex-col space-y-1"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="file_upload" id="file_upload" />
-                <Label htmlFor="file_upload" className="flex items-center">
-                  <FileText className="h-4 w-4 mr-2" />
-                  File Upload
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="link" id="link" />
-                <Label htmlFor="link" className="flex items-center">
-                  <Link className="h-4 w-4 mr-2" />
-                  External Link
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="text_input" id="text_input" />
-                <Label htmlFor="text_input" className="flex items-center">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Text Input
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
+          <SubmissionTypeSelector 
+            selectedType={selectedType}
+            onTypeChange={setSelectedType}
+          />
           
           {selectedType === "file_upload" && (
-            <div className="space-y-2">
-              <Label htmlFor="file-upload">Upload File</Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-                <label 
-                  htmlFor="file-upload" 
-                  className="cursor-pointer flex flex-col items-center justify-center"
-                >
-                  <Upload className="h-10 w-10 text-gray-400" />
-                  <p className="mt-2 text-sm text-gray-600">
-                    {file ? file.name : "Click to upload or drag and drop"}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    PDF, DOC, DOCX up to 10MB
-                  </p>
-                </label>
-              </div>
-              {file && (
-                <div className="flex items-center justify-between mt-2 p-2 bg-gray-50 rounded">
-                  <span className="text-sm truncate">{file.name}</span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setFile(null)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              )}
-            </div>
+            <FileUploadForm
+              file={file}
+              onFileChange={handleFileChange}
+              onFileRemove={() => setFile(null)}
+            />
           )}
           
           {selectedType === "link" && (
-            <div className="space-y-2">
-              <Label htmlFor="url-input">External Link</Label>
-              <Input
-                id="url-input"
-                placeholder="https://..."
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Provide a link to your external work (e.g., GitHub, Figma, Google Docs)
-              </p>
-            </div>
+            <LinkSubmissionForm
+              linkUrl={linkUrl}
+              onLinkChange={(e) => setLinkUrl(e.target.value)}
+            />
           )}
           
           {selectedType === "text_input" && (
-            <div className="space-y-2">
-              <Label htmlFor="text-input">Your Submission</Label>
-              <Textarea
-                id="text-input"
-                placeholder="Enter your submission content here..."
-                className="min-h-[200px]"
-                value={textContent}
-                onChange={(e) => setTextContent(e.target.value)}
-              />
-            </div>
+            <TextSubmissionForm
+              textContent={textContent}
+              onTextChange={(e) => setTextContent(e.target.value)}
+            />
           )}
         </div>
         
