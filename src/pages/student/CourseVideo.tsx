@@ -1,144 +1,55 @@
 
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Download, CheckCircle, FileText, MessageSquare, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import React from "react";
+import { useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubmitAssignmentModal from "@/components/student/assignments/SubmitAssignmentModal";
-import { TextSubmissionForm } from "@/components/student/assignments/submission/TextSubmissionForm";
+import VideoPlayer from "@/components/student/course-video/VideoPlayer";
+import VideoHeader from "@/components/student/course-video/VideoHeader";
+import VideoControls from "@/components/student/course-video/VideoControls";
+import ResourcesTab from "@/components/student/course-video/tabs/ResourcesTab";
+import DiscussionsTab from "@/components/student/course-video/tabs/DiscussionsTab";
+import NotesTab from "@/components/student/course-video/tabs/NotesTab";
+import AssignmentTab from "@/components/student/course-video/tabs/AssignmentTab";
+import TranscriptTab from "@/components/student/course-video/tabs/TranscriptTab";
+import { useCourseVideo } from "@/components/student/course-video/useCourseVideo";
 
 const CourseVideo = () => {
   const { topicId } = useParams<{ topicId: string }>();
-  const navigate = useNavigate();
-  const [completed, setCompleted] = useState(false);
-  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
-  const [textContent, setTextContent] = useState("");
-  const [commentText, setCommentText] = useState("");
-  
-  // Mock topic data
-  const topic = {
-    id: topicId,
-    title: "UI vs UX: Understanding the Difference",
-    description: "Learn about user interface design vs user experience design and how they work together.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Using a real embed URL
-    instructor: "Thomas Anderson",
-    duration: "15 min",
-    attachments: [
-      { id: "att-1", name: "UI/UX Cheat Sheet", type: "pdf" },
-      { id: "att-2", name: "Example Projects", type: "zip" }
-    ],
-    assignment: {
-      id: "assignment-1",
-      title: "Compare UI and UX in an Existing Product",
-      description: "Analyze and document the UI and UX elements of a digital product of your choice.",
-      dueDate: "2023-09-10",
-      status: "pending" // Added status
-    },
-    discussions: [
-      { 
-        id: "disc-1", 
-        author: "Emily Johnson", 
-        content: "I found the distinction between affordances and signifiers particularly interesting!", 
-        timestamp: "2 days ago",
-        replies: 3
-      },
-      {
-        id: "disc-2",
-        author: "Michael Chen",
-        content: "Does anyone have examples of good UI but poor UX in modern applications?",
-        timestamp: "1 day ago",
-        replies: 5
-      }
-    ]
-  };
-  
-  const handleComplete = () => {
-    setCompleted(true);
-    // In a real app, you would save this to the backend
-  };
-  
-  const handleBack = () => {
-    navigate(`/student-courses`);
-  };
-  
-  const handleDownload = (attachmentId: string) => {
-    console.log("Downloading attachment:", attachmentId);
-  };
-  
-  const handleAssignment = () => {
-    // Open submit modal instead of navigating
-    setIsSubmitModalOpen(true);
-  };
-  
-  const handleCloseModal = () => {
-    setIsSubmitModalOpen(false);
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTextContent(e.target.value);
-  };
-
-  const handleCommentSubmit = () => {
-    if (commentText.trim()) {
-      console.log("Submitting comment:", commentText);
-      setCommentText("");
-    }
-  };
+  const {
+    topic,
+    completed,
+    isSubmitModalOpen,
+    textContent,
+    handleComplete,
+    handleBack,
+    handleDownload,
+    handleAssignment,
+    handleCloseModal,
+    handleTextChange,
+    handleCommentSubmit
+  } = useCourseVideo(topicId);
   
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={handleBack}>
-          <ArrowLeft size={16} className="mr-2" />
-          Back to Course
-        </Button>
-      </div>
+      <VideoHeader 
+        title={topic.title}
+        description={topic.description}
+        instructor={topic.instructor}
+        duration={topic.duration}
+        handleBack={handleBack}
+      />
       
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight mb-1">{topic.title}</h1>
-        <p className="text-muted-foreground">{topic.description}</p>
-        <div className="flex items-center gap-2 mt-2 text-sm">
-          <span>Instructor: {topic.instructor}</span>
-          <span>•</span>
-          <span>{topic.duration}</span>
-          <span>•</span>
-          <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">Student Content</span>
-        </div>
-      </div>
+      <VideoPlayer 
+        videoUrl={topic.videoUrl} 
+        title={topic.title} 
+      />
       
-      <div className="aspect-video bg-gray-900 rounded-lg">
-        <iframe 
-          src={topic.videoUrl} 
-          className="w-full h-full" 
-          title={topic.title} 
-          frameBorder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowFullScreen
-        ></iframe>
-      </div>
-      
-      <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-          {completed ? (
-            <div className="flex items-center text-green-500">
-              <CheckCircle size={20} className="mr-1" />
-              Completed
-            </div>
-          ) : (
-            <Button onClick={handleComplete}>Mark as Completed</Button>
-          )}
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {topic.assignment && (
-            <Button onClick={handleAssignment}>
-              <Upload size={16} className="mr-2" />
-              Submit Assignment
-            </Button>
-          )}
-        </div>
-      </div>
+      <VideoControls 
+        completed={completed}
+        hasAssignment={!!topic.assignment}
+        handleComplete={handleComplete}
+        handleAssignment={handleAssignment}
+      />
       
       <Tabs defaultValue="resources" className="w-full">
         <TabsList className="mb-4">
@@ -150,143 +61,35 @@ const CourseVideo = () => {
         </TabsList>
         
         <TabsContent value="resources">
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-semibold mb-3">Attachments</h3>
-              <div className="space-y-2">
-                {topic.attachments.map((attachment) => (
-                  <div key={attachment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <FileText size={16} />
-                      <span>{attachment.name}</span>
-                      <span className="text-xs uppercase text-muted-foreground">({attachment.type})</span>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleDownload(attachment.id)}
-                    >
-                      <Download size={16} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <ResourcesTab 
+            attachments={topic.attachments}
+            handleDownload={handleDownload}
+          />
         </TabsContent>
 
         <TabsContent value="discussions">
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-semibold mb-3">Class Discussions</h3>
-              <div className="space-y-4 mb-6">
-                {topic.discussions.map((discussion) => (
-                  <div key={discussion.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium">{discussion.author}</span>
-                      <span className="text-xs text-muted-foreground">{discussion.timestamp}</span>
-                    </div>
-                    <p className="text-sm mb-2">{discussion.content}</p>
-                    <div className="flex items-center">
-                      <Button variant="ghost" size="sm" className="text-xs">
-                        <MessageSquare size={14} className="mr-1" />
-                        {discussion.replies} {discussion.replies === 1 ? 'Reply' : 'Replies'}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">Add to the discussion</h4>
-                <textarea 
-                  className="w-full min-h-[100px] p-3 border rounded-md mb-2"
-                  placeholder="Share your thoughts or questions with the class..."
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                ></textarea>
-                <div className="flex justify-end">
-                  <Button 
-                    onClick={handleCommentSubmit}
-                    disabled={!commentText.trim()}
-                  >
-                    Post Comment
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <DiscussionsTab 
+            discussions={topic.discussions}
+            onCommentSubmit={handleCommentSubmit}
+          />
         </TabsContent>
         
         <TabsContent value="notes">
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-semibold mb-3">Your Notes</h3>
-              <TextSubmissionForm 
-                textContent={textContent}
-                onTextChange={handleTextChange}
-              />
-              <div className="flex justify-end mt-4">
-                <Button>Save Notes</Button>
-              </div>
-            </CardContent>
-          </Card>
+          <NotesTab 
+            textContent={textContent}
+            onTextChange={handleTextChange}
+          />
         </TabsContent>
         
         <TabsContent value="assignment">
-          {topic.assignment ? (
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="font-semibold mb-3">{topic.assignment.title}</h3>
-                <p className="text-sm mb-4">{topic.assignment.description}</p>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
-                    Due: {topic.assignment.dueDate}
-                  </span>
-                  <span className={`text-sm px-2 py-1 rounded-full ${
-                    topic.assignment.status === 'pending' ? 'bg-amber-100 text-amber-800' : 
-                    topic.assignment.status === 'submitted' ? 'bg-blue-100 text-blue-800' : 
-                    'bg-green-100 text-green-800'
-                  }`}>
-                    {topic.assignment.status.charAt(0).toUpperCase() + topic.assignment.status.slice(1)}
-                  </span>
-                </div>
-                <Button 
-                  className="w-full sm:w-auto" 
-                  onClick={handleAssignment}
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  Submit Assignment
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-muted-foreground text-center">No assignment for this video.</p>
-              </CardContent>
-            </Card>
-          )}
+          <AssignmentTab 
+            assignment={topic.assignment}
+            handleAssignment={handleAssignment}
+          />
         </TabsContent>
         
         <TabsContent value="transcript">
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-semibold mb-3">Video Transcript</h3>
-              <div className="p-4 bg-secondary/30 rounded-md max-h-[300px] overflow-y-auto">
-                <p className="text-sm">
-                  Welcome to this lesson on UI versus UX design. In this video, we'll cover the key differences between user interface design and user experience design, and how they work together to create effective digital products.
-                </p>
-                <p className="text-sm mt-2">
-                  User Interface, or UI design, focuses on the visual elements that users interact with. This includes buttons, icons, spacing, typography, color schemes, and overall visual style. A good UI designer ensures that every visual element feels cohesive and serves a clear purpose.
-                </p>
-                <p className="text-sm mt-2">
-                  On the other hand, User Experience, or UX design, is concerned with the overall feel of the experience. UX designers focus on understanding the user's journey, their needs, and pain points. They work to ensure the product is intuitive, accessible, and enjoyable to use.
-                </p>
-                {/* Further transcript content would go here in a real implementation */}
-              </div>
-            </CardContent>
-          </Card>
+          <TranscriptTab />
         </TabsContent>
       </Tabs>
       
