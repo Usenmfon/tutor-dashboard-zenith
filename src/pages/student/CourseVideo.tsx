@@ -6,19 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubmitAssignmentModal from "@/components/student/assignments/SubmitAssignmentModal";
+import { TextSubmissionForm } from "@/components/student/assignments/submission/TextSubmissionForm";
 
 const CourseVideo = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
   const [completed, setCompleted] = useState(false);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [textContent, setTextContent] = useState("");
+  const [commentText, setCommentText] = useState("");
   
   // Mock topic data
   const topic = {
     id: topicId,
     title: "UI vs UX: Understanding the Difference",
     description: "Learn about user interface design vs user experience design and how they work together.",
-    videoUrl: "https://example.com/videos/ui-vs-ux.mp4",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Using a real embed URL
     instructor: "Thomas Anderson",
     duration: "15 min",
     attachments: [
@@ -31,7 +34,23 @@ const CourseVideo = () => {
       description: "Analyze and document the UI and UX elements of a digital product of your choice.",
       dueDate: "2023-09-10",
       status: "pending" // Added status
-    }
+    },
+    discussions: [
+      { 
+        id: "disc-1", 
+        author: "Emily Johnson", 
+        content: "I found the distinction between affordances and signifiers particularly interesting!", 
+        timestamp: "2 days ago",
+        replies: 3
+      },
+      {
+        id: "disc-2",
+        author: "Michael Chen",
+        content: "Does anyone have examples of good UI but poor UX in modern applications?",
+        timestamp: "1 day ago",
+        replies: 5
+      }
+    ]
   };
   
   const handleComplete = () => {
@@ -55,6 +74,17 @@ const CourseVideo = () => {
   const handleCloseModal = () => {
     setIsSubmitModalOpen(false);
   };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextContent(e.target.value);
+  };
+
+  const handleCommentSubmit = () => {
+    if (commentText.trim()) {
+      console.log("Submitting comment:", commentText);
+      setCommentText("");
+    }
+  };
   
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -77,9 +107,15 @@ const CourseVideo = () => {
         </div>
       </div>
       
-      <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
-        {/* In a real app, this would be an actual video player */}
-        <div className="text-white">Video Player: {topic.title}</div>
+      <div className="aspect-video bg-gray-900 rounded-lg">
+        <iframe 
+          src={topic.videoUrl} 
+          className="w-full h-full" 
+          title={topic.title} 
+          frameBorder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen
+        ></iframe>
       </div>
       
       <div className="flex justify-between">
@@ -107,6 +143,7 @@ const CourseVideo = () => {
       <Tabs defaultValue="resources" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="resources">Resources</TabsTrigger>
+          <TabsTrigger value="discussions">Discussions</TabsTrigger>
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="assignment">Assignment</TabsTrigger>
           <TabsTrigger value="transcript">Transcript</TabsTrigger>
@@ -137,15 +174,58 @@ const CourseVideo = () => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="discussions">
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="font-semibold mb-3">Class Discussions</h3>
+              <div className="space-y-4 mb-6">
+                {topic.discussions.map((discussion) => (
+                  <div key={discussion.id} className="p-4 border rounded-lg">
+                    <div className="flex justify-between mb-2">
+                      <span className="font-medium">{discussion.author}</span>
+                      <span className="text-xs text-muted-foreground">{discussion.timestamp}</span>
+                    </div>
+                    <p className="text-sm mb-2">{discussion.content}</p>
+                    <div className="flex items-center">
+                      <Button variant="ghost" size="sm" className="text-xs">
+                        <MessageSquare size={14} className="mr-1" />
+                        {discussion.replies} {discussion.replies === 1 ? 'Reply' : 'Replies'}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-4">
+                <h4 className="text-sm font-medium mb-2">Add to the discussion</h4>
+                <textarea 
+                  className="w-full min-h-[100px] p-3 border rounded-md mb-2"
+                  placeholder="Share your thoughts or questions with the class..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                ></textarea>
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={handleCommentSubmit}
+                    disabled={!commentText.trim()}
+                  >
+                    Post Comment
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
         
         <TabsContent value="notes">
           <Card>
             <CardContent className="pt-6">
               <h3 className="font-semibold mb-3">Your Notes</h3>
-              <textarea 
-                className="w-full min-h-[200px] p-3 border rounded-md"
-                placeholder="Type your notes here..."
-              ></textarea>
+              <TextSubmissionForm 
+                textContent={textContent}
+                onTextChange={handleTextChange}
+              />
               <div className="flex justify-end mt-4">
                 <Button>Save Notes</Button>
               </div>

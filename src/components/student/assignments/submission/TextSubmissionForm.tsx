@@ -8,7 +8,7 @@ interface TextSubmissionFormProps {
   onTextChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-const TextSubmissionForm: React.FC<TextSubmissionFormProps> = ({
+export const TextSubmissionForm: React.FC<TextSubmissionFormProps> = ({
   textContent,
   onTextChange
 }) => {

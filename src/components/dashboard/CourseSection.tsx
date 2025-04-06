@@ -10,24 +10,24 @@ const CourseSection = () => {
   
   const handleViewAllCourses = () => {
     console.log("Navigating to All Courses");
-    navigate("/courses");
+    navigate("/student-courses");
   };
 
   const handleManageCourse = () => {
     console.log("Managing course");
-    // Update to navigate to courses page and set the tab to 'manage'
-    navigate("/courses", { state: { activeTab: "manage", selectedCourse: "course1" } });
+    // Navigate to course video page
+    navigate("/student-courses/video/topic-1");
   };
 
   const handleViewCourse = () => {
     console.log("Viewing course");
-    navigate("/courses");
+    navigate("/student-courses/video/topic-1");
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold tracking-tight">Your Pre-Recorded Courses</h2>
+        <h2 className="text-xl font-semibold tracking-tight">My Courses</h2>
         <button 
           className="text-sm text-primary font-medium hover:underline"
           onClick={handleViewAllCourses}

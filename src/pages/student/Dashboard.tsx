@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Card,
@@ -85,7 +84,7 @@ const StudentDashboard = () => {
   };
 
   const handleContinueLearning = (courseId: string, topicId: string) => {
-    navigate(`/student/course-video/${topicId}`);
+    navigate(`/student-courses/video/${topicId}`);
   };
 
   const handleStartAssignment = (assignmentId: string) => {
