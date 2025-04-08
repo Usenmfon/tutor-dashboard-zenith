@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Table,
@@ -21,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Edit, Trash2, Search, UserX, UserCheck, Users as UsersIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import UserManagementModal from "@/components/admin/UserManagementModal";
 
 // Mock data for users
 const mockUsers = [
@@ -77,6 +77,8 @@ const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Filter users based on search term and filters
   const filteredUsers = users.filter(user => {
@@ -115,6 +117,47 @@ const AdminUsers = () => {
     });
   };
 
+  const handleAddUser = () => {
+    setCurrentUser(null);
+    setModalOpen(true);
+  };
+
+  const handleEditUser = (user: any) => {
+    setCurrentUser(user);
+    setModalOpen(true);
+  };
+
+  const handleSaveUser = (userData: any) => {
+    if (currentUser) {
+      // Update existing user
+      setUsers(users.map(user =>
+        user.id === currentUser.id ? { ...user, ...userData } : user
+      ));
+
+      toast({
+        title: "User updated",
+        description: `${userData.name} has been updated.`,
+      });
+    } else {
+      // Add new user
+      const newUser = {
+        id: (users.length + 1).toString(),
+        ...userData,
+        status: "active",
+        joined: new Date().toISOString().split('T')[0]
+      };
+
+      setUsers([...users, newUser]);
+
+      toast({
+        title: "User added",
+        description: `${userData.name} has been added as a ${userData.role}.`,
+      });
+    }
+
+    setModalOpen(false);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
@@ -148,7 +191,7 @@ const AdminUsers = () => {
           <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
           <p className="text-muted-foreground">Manage users, roles and permissions</p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button onClick={handleAddUser} className="flex items-center gap-2">
           <PlusCircle size={16} />
           Add User
         </Button>
@@ -225,7 +268,7 @@ const AdminUsers = () => {
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditUser(user)}>
                             <Edit size={16} className="text-muted-foreground" />
                           </Button>
                           {user.status === "active" ? (
@@ -260,6 +303,13 @@ const AdminUsers = () => {
           )}
         </CardContent>
       </Card>
+
+      <UserManagementModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSaveUser}
+        user={currentUser}
+      />
     </div>
   );
 };
