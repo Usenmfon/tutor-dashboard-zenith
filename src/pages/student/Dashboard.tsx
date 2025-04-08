@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Card,
@@ -234,6 +235,7 @@ const StudentDashboard = () => {
                       </div>
                     </div>
                     <div className="mt-2">
+                      {/* Only one submit button */}
                       <Button 
                         size="sm"
                         onClick={() => handleStartAssignment(assignment.id)}

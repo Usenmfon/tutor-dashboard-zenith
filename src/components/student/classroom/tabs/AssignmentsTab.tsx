@@ -66,6 +66,7 @@ const AssignmentsTab: React.FC<AssignmentsTabProps> = ({ assignments }) => {
                 <p className="text-sm">
                   Complete this assignment and submit it before the due date.
                 </p>
+                {/* Single submit button */}
                 <Button 
                   className="w-full" 
                   onClick={() => assignment.submissionLink && window.open(assignment.submissionLink, '_blank')}

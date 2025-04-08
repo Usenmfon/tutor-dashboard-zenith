@@ -106,7 +106,8 @@ const StudentCourses = () => {
   
   const handleViewContent = (courseId: number, topicId: string) => {
     console.log(`View content: Course ${courseId}, Topic ${topicId}`);
-    navigate(`/student-courses/content/${topicId}`);
+    // Updated to use the video route instead of content route
+    navigate(`/student-courses/video/${topicId}`);
   };
 
   const handleViewAssignment = (assignmentId: string) => {

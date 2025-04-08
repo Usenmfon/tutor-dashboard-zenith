@@ -21,6 +21,7 @@ const CourseSection = () => {
 
   const handleViewCourse = () => {
     console.log("Viewing course");
+    // Fix to use the correct route for viewing courses
     navigate("/student-courses/video/topic-1");
   };
 
@@ -53,4 +54,3 @@ const CourseSection = () => {
 };
 
 export default CourseSection;
-
