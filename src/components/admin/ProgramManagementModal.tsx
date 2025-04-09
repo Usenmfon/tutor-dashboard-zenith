@@ -25,6 +25,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X, Plus, Users, GraduationCap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface ProgramManagementModalProps {
   isOpen: boolean;
